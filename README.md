@@ -8,12 +8,12 @@
 
 
 ## Description
-**AvoMailForm** is a simple and elegant contact form plugin for WordPress. This plugin helps website owners collect user inquiries by displaying a customizable contact form with email functionality.
+**AvoMailForm** is a simple and elegant contact form plugin for WordPress. This plugin helps website owners collect user inquiries by displaying a customizable contact form with SMTP email functionality.
 
 ## Features
 - Displays a contact form on any page using a shortcode.
 - Allows users to submit their inquiries via email.
-- Customizable fields for name, email, subject, and message.
+- Fields for name, email and message.
 - Lightweight and easy to use.
 
 ## Installation
@@ -29,12 +29,12 @@
 3. Activate the plugin from the **Plugins** menu in WordPress.
 
 ## Usage
-1. Once activated, insert the shortcode `[avomailtoform]` on any page to display the contact form.
+1. Once activated, insert the shortcode `[send_it_contact_form]` on any page to display the contact form.
 2. Users can fill out the form and submit inquiries via email.
 3. The plugin handles form validation and email delivery securely.
 
 ## Customization
-You can modify the appearance of the form by editing the `avomailtoform-style.css` file inside the plugin folder.
+You can modify the appearance of the form by adding custom CSS in your theme or in a custom stylesheet.
 
 ## Contributing
 We welcome contributions! Feel free to open an **Issue** or submit a **Pull Request**.

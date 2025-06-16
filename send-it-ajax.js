@@ -16,18 +16,18 @@ jQuery(document).ready(function($) {
             data: formData,
             dataType: 'json',
             beforeSend: function() {
-                $('#send-it-message').html('<p>Sending...</p>').fadeIn();
+                $('#send-it-response').html('<p>Sending...</p>').fadeIn();
             },
             success: function(response) {
                 if (response.success) {
-                    $('#send-it-message').html('<p style="color: green;">' + response.data + '</p>').fadeIn();
+                    $('#send-it-response').html('<p style="color: green;">' + response.data + '</p>').fadeIn();
                     $('#send-it-form')[0].reset();
                 } else {
-                    $('#send-it-message').html('<p style="color: red;">' + response.data + '</p>').fadeIn();
+                    $('#send-it-response').html('<p style="color: red;">' + response.data + '</p>').fadeIn();
                 }
             },
             error: function() {
-                $('#send-it-message').html('<p style="color: red;">There was an error processing your request. Please try again.</p>').fadeIn();
+                $('#send-it-response').html('<p style="color: red;">There was an error processing your request. Please try again.</p>').fadeIn();
             }
         });
     });

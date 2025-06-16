@@ -123,4 +123,90 @@ function avocadoweb_settings_page() {
     </div>
     <?php
 }
-?>
+
+// Enqueue frontend script
+function avocadoweb_enqueue_scripts() {
+    wp_enqueue_script(
+        'send-it-ajax',
+        plugins_url('send-it-ajax.js', __FILE__),
+        array('jquery'),
+        '1.0',
+        true
+    );
+
+    wp_localize_script('send-it-ajax', 'sendItAjax', array(
+        'ajaxurl'  => admin_url('admin-ajax.php'),
+        'security' => wp_create_nonce('send_it_form_nonce'),
+    ));
+}
+add_action('wp_enqueue_scripts', 'avocadoweb_enqueue_scripts');
+
+// Configure PHPMailer to use SMTP settings from options
+function avocadoweb_configure_phpmailer($phpmailer) {
+    $host     = get_option('avocadoweb_smtp_host');
+    $port     = get_option('avocadoweb_smtp_port');
+    $username = get_option('avocadoweb_smtp_username');
+    $password = get_option('avocadoweb_smtp_password');
+
+    if ($host && $port && $username && $password) {
+        $phpmailer->isSMTP();
+        $phpmailer->Host       = $host;
+        $phpmailer->Port       = (int) $port;
+        $phpmailer->SMTPAuth   = true;
+        $phpmailer->Username   = $username;
+        $phpmailer->Password   = $password;
+    }
+}
+add_action('phpmailer_init', 'avocadoweb_configure_phpmailer');
+
+// Shortcode output
+function avocadoweb_contact_form_shortcode() {
+    ob_start();
+    ?>
+    <form id="send-it-form">
+        <?php wp_nonce_field('send_it_form_action', 'send_it_form_nonce_field'); ?>
+        <p>
+            <label for="send-it-name">Name</label><br>
+            <input type="text" id="send-it-name" name="name" required>
+        </p>
+        <p>
+            <label for="send-it-email">Email</label><br>
+            <input type="email" id="send-it-email" name="email" required>
+        </p>
+        <p>
+            <label for="send-it-message">Message</label><br>
+            <textarea id="send-it-message" name="message" required></textarea>
+        </p>
+        <p>
+            <button type="submit">Send</button>
+        </p>
+        <div id="send-it-response"></div>
+    </form>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('send_it_contact_form', 'avocadoweb_contact_form_shortcode');
+
+// AJAX handler for form submission
+function avocadoweb_handle_form_submit() {
+    check_ajax_referer('send_it_form_nonce', 'security');
+
+    $name    = sanitize_text_field($_POST['name']);
+    $email   = sanitize_email($_POST['email']);
+    $message = sanitize_textarea_field($_POST['message']);
+
+    $to      = get_option('avocadoweb_email_recipient');
+    $subject = 'New Contact Form Submission';
+    $body    = "Name: $name\nEmail: $email\n\n$message";
+
+    $sent = wp_mail($to, $subject, $body);
+
+    if ($sent) {
+        wp_send_json_success('Message sent successfully.');
+    } else {
+        wp_send_json_error('Failed to send message.');
+    }
+}
+add_action('wp_ajax_send_it_form_submit', 'avocadoweb_handle_form_submit');
+add_action('wp_ajax_nopriv_send_it_form_submit', 'avocadoweb_handle_form_submit');
+
